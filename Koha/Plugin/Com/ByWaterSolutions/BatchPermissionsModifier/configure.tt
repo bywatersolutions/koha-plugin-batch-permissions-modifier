@@ -1,0 +1,58 @@
+[% INCLUDE 'doc-head-open.inc' %]
+  <title>Koha: Batch Permissions Modifier: Configuration</title>
+  [% INCLUDE 'doc-head-close.inc' %]
+
+  <link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/css/humanmsg.css" />
+  <script src="[% interface %]/lib/jquery/plugins/humanmsg.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#save_continue').on('click', function(e){
+        e.preventDefault();
+        $.post('', $('#configureForm').serialize(), function(){
+          humanMsg.displayMsg('Settings saved!');
+        });
+      });
+    });
+  </script>
+
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Batch Permissions Modifier &rsaquo; Configuration</div>
+
+<div id="doc3">
+    <h3>Koha: Batch Permissions Modifier: Configuration</h3>
+
+    <form id="configureForm" method="get">
+        <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+        <input type="hidden" name="class" value="[% CLASS %]"/>
+        <input type="hidden" name="method" value="[% METHOD %]"/>
+
+        <fieldset>
+            <legend>Template patrons</legend>
+
+            <textarea name="template_patrons" id="template_patrons" rows="5">[% template_patrons %]</textarea>
+            <div class="hint">Enter borrowernumbers, one per line.</div>
+        </fieldset>
+
+        <p/>
+
+        <fieldset>
+            <legend>Template permission mappings</legend>
+
+            <textarea name="template_permission_mappings" id="template_permission_mappings" rows="5">[% template_permission_mappings %]</textarea>
+            <div class="hint">Enter "borrowernumber: patron_list_id pairs", one per line.</div>
+        </fieldset>
+
+        <p/>
+
+        <input type="hidden" name="save" value="1" />
+
+        <input type="submit" value="Save" />
+        <button id="save_continue">Save & continue</button>
+    </form>
+
+[% INCLUDE 'intranet-bottom.inc' %]

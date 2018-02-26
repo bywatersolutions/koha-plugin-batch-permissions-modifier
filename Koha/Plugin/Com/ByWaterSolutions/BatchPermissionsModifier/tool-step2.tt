@@ -1,0 +1,15 @@
+[% INCLUDE 'doc-head-open.inc' %]
+  <title>Koha: Batch Permissions Modifier: Configuration</title>
+  [% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; <a href="run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=tool">Batch Permissions Modifier</a> &rsaquo; Modify permissions</div>
+
+<div id="doc3">
+    <h3>Koha: Batch Permissions Modifier: Modify permissions</h3>
+
+    <h4>[% patrons_updated %] patron's permissions were updated!</h4>
+[% INCLUDE 'intranet-bottom.inc' %]

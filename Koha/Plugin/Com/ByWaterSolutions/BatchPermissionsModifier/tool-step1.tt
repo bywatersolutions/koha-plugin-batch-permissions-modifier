@@ -1,0 +1,44 @@
+[% INCLUDE 'doc-head-open.inc' %]
+  <title>Koha: Batch Permissions Modifier: Configuration</title>
+  [% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Batch Permissions Modifier &rsaquo; Modify permissions</div>
+
+<div id="doc3">
+    <h3>Koha: Batch Permissions Modifier: Modify permissions</h3>
+
+    <form id="modify-permissions-form" method="get">
+        <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+        <input type="hidden" name="class" value="[% CLASS %]"/>
+        <input type="hidden" name="method" value="[% METHOD %]"/>
+
+        <fieldset>
+            <legend>Modify permission</legend>
+
+            <label for="borrowernumber">Template: </label>
+            <select id="borrowernumber" name="borrowernumber">
+                [% FOREACH p IN template_patrons %]
+                    <option value="[% p.id %]">[% p.surname %]</option>
+                [% END %]
+            </select>
+
+            <p/>
+
+            <label for="patron_list_id">Patron list: </label>
+            <select id="patron_list_id" name="patron_list_id">
+                [% FOREACH p IN patron_lists %]
+                    <option value="[% p.id %]">[% p.name %]</option>
+                [% END %]
+            </select>
+        </fieldset>
+
+        <p>
+
+        <input name="submitted" type="submit" value="Batch modify permissions" />
+    </form>
+
+[% INCLUDE 'intranet-bottom.inc' %]
