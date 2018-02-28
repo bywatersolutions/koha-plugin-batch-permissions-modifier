@@ -22,6 +22,36 @@ BEGIN {
 
     unshift( @INC, $local_libs );
     unshift( @INC, "$local_libs/$Config{archname}" );
+
+    my $dbh = C4::Context->dbh;
+
+    # Add a constraint so we aren't creating duplicate permissions on each run
+    # $dbh->do(q{
+    #    ALTER TABLE user_permissions ADD UNIQUE KEY require_unique (`borrowernumber`,`module_bit`,`code`);
+    # });
+    # Turns out this isn't necessary, leaving for posterity
+
+    # Add the new permissions
+    $dbh->do(q{
+        INSERT IGNORE INTO permissions ( module_bit, code, description ) VALUES
+        ( 19, 'check_list', 'Batch Permissions Modifier - Needed by all' ),
+        ( 19, 'check_patron', 'Batch Permissions Modifier - Needed by all' )
+    });
+
+    # Only insert new permissions for users with 'catalogue' permissions
+    # Which is required for staff users to login
+    $dbh->do(q{
+        INSERT IGNORE INTO user_permissions
+        SELECT borrowernumber, '19', 'check_list'
+        FROM borrowers
+        WHERE SUBSTRING( CONV(flags, 10, 2), -3, 1 ) = 1;
+    });
+    $dbh->do(q{
+        INSERT IGNORE INTO user_permissions
+        SELECT borrowernumber, '19', 'check_patron'
+        FROM borrowers
+        WHERE SUBSTRING( CONV(flags, 10, 2), -3, 1 ) = 1;
+    });
 }
 
 ## Here we set our plugin version
@@ -51,19 +81,6 @@ sub new {
     my $self = $class->SUPER::new($args);
 
     return $self;
-}
-
-sub update_permissions {
-    my ( $self, $args ) = @_;
-
-    my $cgi = $self->{'cgi'};
-
-    unless ( $cgi->param('submitted') ) {
-        $self->tool_step1();
-    }
-    else {
-        $self->tool_step2();
-    }
 }
 
 sub tool {
