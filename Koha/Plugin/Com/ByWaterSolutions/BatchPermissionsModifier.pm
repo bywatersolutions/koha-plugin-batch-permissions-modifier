@@ -131,16 +131,35 @@ sub check_patron {
 
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
 
+    # Check to see if patron is a template patron, if so, update the permissions
+    # of all patrons in lists mapped to that patron
+    my $is_template_patron;
     foreach my $pair ( @pairs ) {
         my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
 
-        my $count = $dbh->do("SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?", undef, ( $patron_list_id, $borrowernumber ) );
-
-        if ( $count eq '1' ) {
-            my $template_patron = Koha::Patrons->find( $template_borrowernumber );
+        my $template_patron;
+        if ( $borrowernumber eq $template_borrowernumber ) {
+            $template_patron ||= Koha::Patrons->find( $template_borrowernumber );
             $self->update_permissions( $template_patron, $patron_list_id );
+            $is_template_patron = 1;
+        }
+    }
 
-            last;
+    # If this patron is not a template patron, check to see if the patron is any of
+    # the mapped patron lists and set the patrons permissions based on the first mapped
+    # list the patron is found in. Stop at the first list the patron is found in.
+    unless ( $is_template_patron ) {
+        foreach my $pair ( @pairs ) {
+            my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+
+            my $count = $dbh->do("SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?", undef, ( $patron_list_id, $borrowernumber ) );
+
+            if ( $count eq '1' ) {
+                my $template_patron = Koha::Patrons->find( $template_borrowernumber );
+                $self->update_permissions( $template_patron, $patron_list_id );
+
+                last;
+            }
         }
     }
 

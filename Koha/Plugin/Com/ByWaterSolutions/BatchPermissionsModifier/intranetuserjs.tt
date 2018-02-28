@@ -5,7 +5,6 @@ function submitHandlerMemberFlags(submitEvent) {
 
 function submitHandlerPatronLists(submitEvent) {
   let patron_list_id = document.querySelector("input[name='patron_list_id']").value;
-  console.log("PATRON LIST ID: " + patron_list_id );
   $.get( "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_list&patron_list_id=" + patron_list_id );
 }
 
