@@ -1,6 +1,7 @@
 [% IF template_permission_mappings %]
 function submitHandlerMemberFlags(submitEvent) {
-  $.get( "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&borrowernumber=" + borrowernumber );
+  let bn = document.querySelector("input[name='member']").value;
+  $.get( "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&borrowernumber=" + bn );
 }
 
 function submitHandlerPatronLists(submitEvent) {
