@@ -1,23 +1,45 @@
 [% IF template_permission_mappings %]
 function submitHandlerMemberFlags(submitEvent) {
   let bn = document.querySelector("input[name='member']").value;
-  $.get( "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&borrowernumber=" + bn );
+  $.get("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&borrowernumber=" + bn);
 }
 
 function submitHandlerPatronLists(submitEvent) {
   let patron_list_id = document.querySelector("input[name='patron_list_id']").value;
-  $.get( "/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_list&patron_list_id=" + patron_list_id );
+  $.get("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_list&patron_list_id=" + patron_list_id);
 }
 
 $(document).ready(function() {
-    let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
-    if ( form ) {
-        form.addEventListener("submit", submitHandlerMemberFlags);
-    }
+  let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
+  if (form) {
+    form.addEventListener("submit", submitHandlerMemberFlags);
 
-    form = document.querySelector("form#add_patrons[action='list.pl']");
-    if ( form ) {
-        form.addEventListener("submit", submitHandlerPatronLists);
-    }
+    let bn = document.querySelector("input[name='member']").value;
+
+    $.getJSON("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&action=get_status&borrowernumber=" + bn, function(data) {
+
+      let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
+      if (data.is_template_patron) {
+        let html = form.innerHTML;
+        let html_new = "<h1>Patron is a permissions template for the following patron lists:</h1><ul>";
+        for (var i = 0, len = data.patron_lists.length; i < len; i++) {
+          html_new += "<li><a href='/cgi-bin/koha/patron_lists/list.pl?patron_list_id=" + data.patron_lists[i].patron_list_id + "'>" + data.patron_lists[i].name + "</a></li>";
+        }
+        html_new += "</ul>";
+        form.innerHTML = html_new + html;
+
+      } else {
+        if (data.patron_list) {
+          form.innerHTML = "<h1>This patron's permissions are controlled by the permissions template patron <a href='/cgi-bin/koha/members/moremember.pl?borrowernumber=" + data.template_patron.borrowernumber + "'>" + data.template_patron.surname + "</a></h1>";
+        }
+      }
+    });
+
+  }
+
+  form = document.querySelector("form#add_patrons[action='list.pl']");
+  if (form) {
+    form.addEventListener("submit", submitHandlerPatronLists);
+  }
 });
 [% END %]

@@ -3,11 +3,14 @@ package Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier;
 ## It's good practive to use Modern::Perl
 use Modern::Perl;
 
+use JSON;
+
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
 
 use Koha::Patrons;
 use Koha::List::Patron;
+use Koha::Database;
 
 # This block allows us to load external modules stored within the plugin itself
 # In this case it's Template::Plugin::Filter::Minify::JavaScript/CSS and deps
@@ -140,6 +143,12 @@ sub check_patron {
     my ( $self, $args ) = @_;
     my $cgi = $self->{'cgi'};
 
+    my $action = $cgi->param('action') || q{};
+    if ( $action eq 'get_status' ) {
+       $self->check_patron_status();
+       return();
+    }
+
     sleep 3;
 
     my $dbh = C4::Context->dbh;
@@ -182,6 +191,71 @@ sub check_patron {
 
     print $cgi->header();
     print "success";
+}
+
+sub check_patron_status {
+    my ( $self, $args ) = @_;
+    my $cgi = $self->{'cgi'};
+
+    my $dbh = C4::Context->dbh;
+
+    my $borrowernumber = $cgi->param('borrowernumber');
+
+    my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
+
+    # Check to see if patron is a template patron, if so, update the permissions
+    # of all patrons in lists mapped to that patron
+    my $is_template_patron;
+    my @patron_list_ids;
+    foreach my $pair ( @pairs ) {
+        my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+        push( @patron_list_ids, $patron_list_id ) if ( $borrowernumber eq $template_borrowernumber );
+    }
+
+    my $data = {
+        is_template_patron => 0,
+    };
+
+    if (@patron_list_ids) {
+        $data->{is_template_patron} = 1;
+        $data->{patron_lists}       = [
+            Koha::Database->new()->schema->resultset('PatronList')->search(
+                { patron_list_id => { -in => \@patron_list_ids } },
+                { result_class => 'DBIx::Class::ResultClass::HashRefInflator' }
+            )->all
+        ];
+    }
+    else {
+
+        foreach my $pair (@pairs) {
+            my ( $template_borrowernumber, $patron_list_id ) =
+              split( /:?\ /, $pair );
+
+            my $count = $dbh->do(
+                "SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?",
+                undef,
+                ( $patron_list_id, $borrowernumber )
+            );
+
+            if ( $count eq '1' ) {
+                $data->{patron_list} =
+                  Koha::Database->new()->schema->resultset('PatronList')->find(
+                    $patron_list_id,
+                    {
+                        result_class =>
+                          'DBIx::Class::ResultClass::HashRefInflator'
+                    }
+                  );
+                $data->{template_patron} =
+                  Koha::Patrons->find($template_borrowernumber)->unblessed();
+            }
+
+            last;
+        }
+    }
+
+    print $cgi->header('application/json');
+    print JSON::to_json( $data );
 }
 
 sub check_list {
