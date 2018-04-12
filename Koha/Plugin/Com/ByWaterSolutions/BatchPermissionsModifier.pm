@@ -248,9 +248,9 @@ sub check_patron_status {
                   );
                 $data->{template_patron} =
                   Koha::Patrons->find($template_borrowernumber)->unblessed();
-            }
 
-            last;
+                last;
+            }
         }
     }
 
