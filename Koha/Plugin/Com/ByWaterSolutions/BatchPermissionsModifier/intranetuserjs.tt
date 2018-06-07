@@ -20,13 +20,16 @@ $(document).ready(function() {
 
       let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
       if (data.is_template_patron) {
-        let html = form.innerHTML;
         let html_new = "<h1>Patron is a permissions template for the following patron lists:</h1><ul>";
         for (var i = 0, len = data.patron_lists.length; i < len; i++) {
           html_new += "<li><a href='/cgi-bin/koha/patron_lists/list.pl?patron_list_id=" + data.patron_lists[i].patron_list_id + "'>" + data.patron_lists[i].name + "</a></li>";
         }
         html_new += "</ul>";
-        form.innerHTML = html_new + html;
+
+        var span = document.createElement('span');
+        span.innerHTML = html_new;
+
+        form.parentNode.insertBefore(span, form);
 
       } else {
         if (data.patron_list) {
