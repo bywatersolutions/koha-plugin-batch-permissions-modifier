@@ -55,6 +55,15 @@ sub new {
     ## and returns our actual $self
     my $self = $class->SUPER::new($args);
 
+    # Need to set up initial use of versioning
+    my $installed        = $self->retrieve_data('__INSTALLED__');
+    my $database_version = $self->retrieve_data('__INSTALLED_VERSION__');
+    my $plugin_version   = $self->get_metadata->{version};
+    if ( $installed && !$database_version ) {
+        $self->upgrade();
+        $self->store_data( { '__INSTALLED_VERSION__' => $plugin_version } );
+    }
+
     return $self;
 }
 
