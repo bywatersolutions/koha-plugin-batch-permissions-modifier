@@ -4,6 +4,7 @@ package Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier;
 use Modern::Perl;
 
 use JSON;
+use Mojo::JSON qw(decode_json);
 
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
@@ -86,6 +87,21 @@ sub new {
     return $self;
 }
 
+sub api_routes {
+    my ( $self, $args ) = @_;
+
+    my $spec_str = $self->mbf_read('openapi.json');
+    my $spec = decode_json($spec_str);
+
+    return $spec;
+}
+
+sub api_namespace {
+    my ($self) = @_;
+
+    return 'bpm';
+}
+
 sub tool {
     my ( $self, $args ) = @_;
 
@@ -140,20 +156,21 @@ sub tool_step2 {
 }
 
 sub check_patron {
-    my ( $self, $args ) = @_;
-    my $cgi = $self->{'cgi'};
+    my ( $self, $params ) = @_;
+    my $borrowernumber = $params->{borrowernumber};
+    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_patron({ borrowernumber => $borrowernumber })";
 
-    my $action = $cgi->param('action') || q{};
-    if ( $action eq 'get_status' ) {
-       $self->check_patron_status();
-       return();
-    }
+#    my $cgi = $self->{'cgi'};
+
+#    my $action = $cgi->param('action') || q{};
+#    if ( $action eq 'get_status' ) {
+#       $self->check_patron_status();
+#       return();
+#    }
 
     sleep 3;
 
     my $dbh = C4::Context->dbh;
-
-    my $borrowernumber = $cgi->param('borrowernumber');
 
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
 
@@ -188,18 +205,14 @@ sub check_patron {
             }
         }
     }
-
-    print $cgi->header();
-    print "success";
 }
 
 sub check_patron_status {
-    my ( $self, $args ) = @_;
-    my $cgi = $self->{'cgi'};
+    my ( $self, $params ) = @_;
+    my $borrowernumber = $params->{borrowernumber};
+    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_patron_status({ borrowernumber => $borrowernumber })";
 
     my $dbh = C4::Context->dbh;
-
-    my $borrowernumber = $cgi->param('borrowernumber');
 
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
 
@@ -254,19 +267,17 @@ sub check_patron_status {
         }
     }
 
-    print $cgi->header('application/json');
-    print JSON::to_json( $data );
+    return $data;
 }
 
 sub check_list {
-    my ( $self, $args ) = @_;
-    my $cgi = $self->{'cgi'};
+    my ( $self, $params ) = @_;
+    my $list_id = $params->{list_id};
+    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_list({ list_id => $list_id })";
 
     sleep 3;
 
     my $dbh = C4::Context->dbh;
-
-    my $list_id = $cgi->param('patron_list_id');
 
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
 
@@ -280,9 +291,6 @@ sub check_list {
 
         last;
     }
-
-    print $cgi->header();
-    print "success";
 }
 
 sub update_permissions {

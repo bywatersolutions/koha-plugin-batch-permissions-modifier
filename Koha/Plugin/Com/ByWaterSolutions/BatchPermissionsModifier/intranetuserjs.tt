@@ -1,12 +1,12 @@
 [% IF template_permission_mappings %]
 function submitHandlerMemberFlags(submitEvent) {
   let bn = document.querySelector("input[name='member']").value;
-  $.get("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&borrowernumber=" + bn);
+  $.get("/api/v1/contrib/bpm/patrons/" + bn + "/check");
 }
 
 function submitHandlerPatronLists(submitEvent) {
   let patron_list_id = document.querySelector("input[name='patron_list_id']").value;
-  $.get("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_list&patron_list_id=" + patron_list_id);
+  $.get("/api/v1/contrib/bpm/patrons/" + patron_list_id + "/check_list");
 }
 
 $(document).ready(function() {
@@ -16,7 +16,7 @@ $(document).ready(function() {
 
     let bn = document.querySelector("input[name='member']").value;
 
-    $.getJSON("/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=check_patron&action=get_status&borrowernumber=" + bn, function(data) {
+    $.get("/api/v1/contrib/bpm/patrons/" + bn + "/check_status", function(data) {
 
       let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
       if (data.is_template_patron) {
