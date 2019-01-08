@@ -149,15 +149,6 @@ sub tool_step2 {
 sub check_patron {
     my ( $self, $params ) = @_;
     my $borrowernumber = $params->{borrowernumber};
-    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_patron({ borrowernumber => $borrowernumber })";
-
-#    my $cgi = $self->{'cgi'};
-
-#    my $action = $cgi->param('action') || q{};
-#    if ( $action eq 'get_status' ) {
-#       $self->check_patron_status();
-#       return();
-#    }
 
     sleep 3;
 
@@ -201,7 +192,6 @@ sub check_patron {
 sub check_patron_status {
     my ( $self, $params ) = @_;
     my $borrowernumber = $params->{borrowernumber};
-    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_patron_status({ borrowernumber => $borrowernumber })";
 
     my $dbh = C4::Context->dbh;
 
@@ -264,7 +254,6 @@ sub check_patron_status {
 sub check_list {
     my ( $self, $params ) = @_;
     my $list_id = $params->{list_id};
-    warn "Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier::check_list({ list_id => $list_id })";
 
     sleep 3;
 
