@@ -12,7 +12,11 @@ function submitHandlerPatronLists(submitEvent) {
 $(document).ready(function() {
   let form = document.querySelector("form[action='/cgi-bin/koha/members/member-flags.pl']");
   if (form) {
+  
     form.addEventListener("submit", submitHandlerMemberFlags);
+    $("form[action='/cgi-bin/koha/members/member-flags.pl'] input[type='submit']").click(function(e){
+        submitHandlerMemberFlags();
+    });
 
     let bn = document.querySelector("input[name='member']").value;
 
@@ -43,6 +47,9 @@ $(document).ready(function() {
   form = document.querySelector("form#add_patrons[action='list.pl']");
   if (form) {
     form.addEventListener("submit", submitHandlerPatronLists);
+    $("form#add_patrons[action='list.pl'] input[type='submit']").click(function(e){
+        submitHandlerPatronLists();
+    });
   }
 });
 [% END %]
