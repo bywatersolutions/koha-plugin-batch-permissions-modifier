@@ -169,7 +169,7 @@ sub check_patron {
     # of all patrons in lists mapped to that patron
     my $is_template_patron;
     foreach my $pair ( @pairs ) {
-        my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+        my ( $template_borrowernumber, $patron_list_id ) = split(/:[[:blank:]]{0,1}/, $pair );
 
         my $template_patron;
         if ( $borrowernumber eq $template_borrowernumber ) {
@@ -184,7 +184,7 @@ sub check_patron {
     # list the patron is found in. Stop at the first list the patron is found in.
     unless ( $is_template_patron ) {
         foreach my $pair ( @pairs ) {
-            my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+            my ( $template_borrowernumber, $patron_list_id ) = split(/:[[:blank:]]{0,1}/, $pair );
 
             my $count = $dbh->do("SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?", undef, ( $patron_list_id, $borrowernumber ) );
 
@@ -211,7 +211,7 @@ sub check_patron_status {
     my $is_template_patron;
     my @patron_list_ids;
     foreach my $pair ( @pairs ) {
-        my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+        my ( $template_borrowernumber, $patron_list_id ) = split(/:[[:blank:]]{0,1}/, $pair );
         push( @patron_list_ids, $patron_list_id ) if ( $borrowernumber eq $template_borrowernumber );
     }
 
@@ -232,7 +232,7 @@ sub check_patron_status {
 
         foreach my $pair (@pairs) {
             my ( $template_borrowernumber, $patron_list_id ) =
-              split( /:?\ /, $pair );
+              split( /:[[:blank:]]{0,1}/, $pair );
 
             my $count = $dbh->do(
                 "SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?",
@@ -271,7 +271,7 @@ sub check_list {
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
 
     foreach my $pair ( @pairs ) {
-        my ( $template_borrowernumber, $patron_list_id ) = split(/:?\ /, $pair );
+        my ( $template_borrowernumber, $patron_list_id ) = split(/:[[:blank:]]{0,1}/, $pair );
 
         next unless $list_id eq $patron_list_id;
 
