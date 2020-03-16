@@ -1,7 +1,7 @@
 {
   "name": "koha-plugin-batch-permissions-modifier",
-  "version": "1.0.11",
-  "previous_version": "1.0.10",
+  "version": "1.0.12",
+  "previous_version": "1.0.11",
   "description": "Koha Batch Permissions Modifier",
   "main": "index.js",
   "dependencies": {
