@@ -108,6 +108,8 @@ jobs:
         sleep 60
         echo "2 MINUTES DONE"
         sleep 60
+        docker exec koha_koha_1 apt-get install -y libyaml-syck-perl libemail-valid-perl
+        while [ $? -ne 0 ]; do echo "INSTALL YAML::Syck" && docker exec koha_koha_1 apt-get install -y libyaml-syck-perl libemail-valid-perl; done
         echo "3 MINUTES DONE"
         echo "WAKING UP"
         echo "DOCKER LOGS"
