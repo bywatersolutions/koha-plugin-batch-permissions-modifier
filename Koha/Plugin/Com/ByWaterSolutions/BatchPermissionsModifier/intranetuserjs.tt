@@ -37,7 +37,9 @@ $(document).ready(function() {
 
       } else {
         if (data.patron_list) {
-          form.innerHTML = "<h1>This patron's permissions are controlled by the permissions template patron <a href='/cgi-bin/koha/members/moremember.pl?borrowernumber=" + data.template_patron.borrowernumber + "'>" + data.template_patron.surname + "</a></h1>";
+          form.insertAdjacentHTML("beforebegin", "<h1>This patron's permissions are controlled by the permissions template patron <a href='/cgi-bin/koha/members/moremember.pl?borrowernumber=" + data.template_patron.borrowernumber + "'>" + data.template_patron.surname + "</a></h1>");
+          $('#permissions_toolbar, #flag_form h1').remove();
+          $('#permissionstree input').attr('disabled','disabled');
         }
       }
     });
