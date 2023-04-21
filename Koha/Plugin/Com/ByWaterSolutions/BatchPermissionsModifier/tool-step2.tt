@@ -11,5 +11,13 @@
 <div id="doc3">
     <h3>Koha: Batch Permissions Modifier: Modify permissions</h3>
 
-    <h4>[% patrons_updated %] patron's permissions were updated!</h4>
+    <h4>
+        [% patrons_updated | html %] patron's permissions were updated using template patron:
+        <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% m.patron_id | uri %]">[% INCLUDE 'patron-title.inc' patron=patron %]</a>
+        and <a href="/cgi-bin/koha/patron_lists/list.pl?patron_list_id=[% patron_list | uri %]" target="_blank">patron list #[% patron_list | html %]</a>
+    </h4>
+    <ul>
+        <li><a href="run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=tool">Perform another batch permissions modification</a></li>
+        <li><a href="run.pl?class=Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier&method=configure">Configure plugin</a></li>
+    </ul>
 [% INCLUDE 'intranet-bottom.inc' %]

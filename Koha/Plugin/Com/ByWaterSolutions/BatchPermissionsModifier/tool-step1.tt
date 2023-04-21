@@ -18,6 +18,17 @@
 
         <fieldset>
             <legend>Modify permission</legend>
+            <h4>
+                This tool allows you to manually apply any template patron's permissions to any
+                <a href="/cgi-bin/koha/patron_lists/lists.pl" tagret="_blank">patron list</a>.
+            </h4>
+            <h5>
+                If you wish to setup a list to automatically apply permissions when a patron is added
+            you can do so in the
+                <a href="/cgi-bin/koha/plugins/run.pl?class=Koha%3A%3APlugin%3A%3ACom%3A%3AByWaterSolutions%3A%3ABatchPermissionsModifier&method=configure" target="_blank">
+                    plugin configuration
+                </a>
+            </h5>
 
             <label for="borrowernumber">Template: </label>
             <select id="borrowernumber" name="borrowernumber">

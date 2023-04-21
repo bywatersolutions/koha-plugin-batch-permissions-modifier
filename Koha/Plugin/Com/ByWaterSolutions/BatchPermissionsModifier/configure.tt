@@ -33,18 +33,21 @@
 
         <fieldset>
             <legend>Template patrons</legend>
+            <h4>This lists the patron whose permissions will be set for any patron added to the paired list below</h4>
+            <div class="hint">Enter borrowernumbers, one per line.</div>
 
             <textarea name="template_patrons" id="template_patrons" rows="5">[% template_patrons %]</textarea>
-            <div class="hint">Enter borrowernumbers, one per line.</div>
         </fieldset>
 
         <p/>
 
         <fieldset>
             <legend>Template permission mappings</legend>
+        <h4>This matches the patrons above to a <a href="/cgi-bin/koha/patron_lists/lists.pl" target="_blank">patron list</a>. Any patron added to the list will receive the permissions of the template patron.</h4>
+            <div class="hint">Enter "borrowernumber: patron_list_id" pairs, one per line, e.g.:</div>
+            <div class="hint">5: 4</div>
 
             <textarea name="template_permission_mappings" id="template_permission_mappings" rows="5">[% template_permission_mappings %]</textarea>
-            <div class="hint">Enter "borrowernumber: patron_list_id pairs", one per line.</div>
         </fieldset>
 
         <p/>

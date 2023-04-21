@@ -35,6 +35,14 @@ Once set up is complete you will need to alter your UseKohaPlugins system prefer
 * Install the plugin
 * Run the plugin configurator
 
-This plugin has to configuration fields:
+This plugin has two configuration fields:
 * Template Patrons: this is a list of patron accounts that you want to use as templates. That is, we will apply the current user permissions from these patrons to other patrons.
-* Template permission mappings: This is a list of borrowernumber:patron_list_id pairs that will automate the setting of user permissions. If a patron is added to the given list, his or her permissions will be set to match those of the patron with the given borrowernumber. This section is optional and not necessary if you will only be using the plugin interactively.
+* Template permission mappings: This is a list of borrowernumber:patron_list_id pairs that will automate the setting of user permissions.
+  * If a patron is added to the given list, his or her permissions will be set to match those of the patron with the given borrowernumber.
+  * If the template patron's permissions are updated, all patrons in the list will be updated as well.
+  * This section is optional and not necessary if you will only be using the plugin interactively with the 'Run tool' option.
+
+This plugin can also be run manually.
+* The 'Run tool' option will present a list of template patrons defined in the configuration above, as well as all patron lists
+  * You can then choose a patron and a list, and click 'Batch modify permissions'
+  * The tool will update all patrons in the list with the permissions of the template patron.

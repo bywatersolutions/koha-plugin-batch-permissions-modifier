@@ -148,7 +148,11 @@ sub tool_step2 {
 
     if ($patron) {
         my $count = $self->update_permissions( $patron, $patron_list_id );
-        $template->param( patrons_updated => $count );
+        $template->param(
+            patrons_updated => $count,
+            patron => $patron,
+            patron_list => $patron_list_id
+        );
     }
 
     print $cgi->header();
@@ -311,7 +315,7 @@ sub update_permissions {
         ( $patron_list_id, $patron->id )
     );
 
-    return $count;
+    return $count + 0;
 }
 
 
