@@ -4,7 +4,7 @@ package Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier;
 use Modern::Perl;
 
 use JSON;
-use Mojo::JSON qw(decode_json);
+use Mojo::JSON;
 
 ## Required for all plugins
 use base qw(Koha::Plugins::Base);
@@ -91,7 +91,7 @@ sub api_routes {
     my ( $self, $args ) = @_;
 
     my $spec_str = $self->mbf_read('openapi.json');
-    my $spec = Mojo::JSON::decode_json($spec_str);
+    my $spec = Mojo::JSON::decode_json $spec_str;
 
     return $spec;
 }
