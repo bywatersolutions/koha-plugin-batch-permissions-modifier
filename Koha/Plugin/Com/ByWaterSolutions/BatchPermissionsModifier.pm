@@ -3,7 +3,6 @@ package Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier;
 ## It's good practive to use Modern::Perl
 use Modern::Perl;
 
-use JSON;
 use Mojo::JSON;
 
 ## Required for all plugins
