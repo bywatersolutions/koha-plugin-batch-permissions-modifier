@@ -363,7 +363,7 @@ sub configure {
         $dbh->do(q{DELETE FROM plugin_data WHERE plugin_key LIKE "enable%" AND plugin_class = 'Koha::Plugin::Com::ByWaterSolutions::BatchPermissionsModifier'});
         $self->store_data($data);
 
-        $self->update_intranetuserjs($data);
+        $self->update_intranetuser_js($data);
 
         $self->go_home();
     }
@@ -386,26 +386,20 @@ sub uninstall() {
     my ( $self, $args ) = @_;
 }
 
+sub intranet_js {
+    my ( $self ) = @_;
+        return "<script>".$self->retrieve_data('intranetuser_js')."</script>";
+}
 
-sub update_intranetuserjs {
+sub update_intranetuser_js {
     my ($self, $data) = @_;
-
-    my $intranetuserjs = C4::Context->preference('intranetuserjs');
-    $intranetuserjs =~ s/\n*\/\* JS for Batch Permissions Modifier.*End of JS for Batch Permissions Modifier \*\///gs;
 
     my $template = $self->get_template( { file => 'intranetuserjs.tt' } );
     $template->param(%$data);
-    $template->param( template_permission_mappings => $self->retrieve_data('template_permission_mappings') );
 
-    my $template_output = $template->output();
-
-    $template_output = qq|\n/* JS for Batch Permissions Modifier
-   Please do not modify */|
-      . $template_output
-      . q|/* End of JS for Batch Permissions Modifier */|;
-
-    $intranetuserjs .= $template_output;
-    C4::Context->set_preference( 'intranetuserjs', $intranetuserjs );
+    my $intranetuser_js = $template->output();
+    
+    $self->store_data({ intranetuser_js => $intranetuser_js });
 }
 
 1;
