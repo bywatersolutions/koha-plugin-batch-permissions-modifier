@@ -10,6 +10,7 @@ use base qw(Koha::Plugins::Base);
 
 use Koha::Patrons;
 use Koha::List::Patron;
+use Koha::Logger;
 use Koha::Database;
 
 # This block allows us to load external modules stored within the plugin itself
@@ -164,6 +165,9 @@ sub check_patron {
 
     sleep 3;
 
+    my $librarian = C4::Context->userenv ? C4::Context->userenv->{'number'} : undef,
+    my $logger = Koha::Logger->get;
+
     my $dbh = C4::Context->dbh;
 
     my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
@@ -179,6 +183,7 @@ sub check_patron {
             $template_patron ||= Koha::Patrons->find( $template_borrowernumber );
             $self->update_permissions( $template_patron, $patron_list_id );
             $is_template_patron = 1;
+	    $logger->debug("BatchPermissionsModifier ( librarian: $librarian ): borrowernumber $borrowernumber is a template patron, updating related patron permissions");
         }
     }
 
@@ -192,6 +197,7 @@ sub check_patron {
             my $count = $dbh->do("SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?", undef, ( $patron_list_id, $borrowernumber ) );
 
             if ( $count eq '1' ) {
+                $logger->debug("BatchPermissionsModifier ( librarian: $librarian ): borrowernumber $borrowernumber is in a mapped patron list, updated permissions");
                 my $template_patron = Koha::Patrons->find( $template_borrowernumber );
                 $self->update_permissions( $template_patron, $patron_list_id );
 
@@ -287,6 +293,10 @@ sub check_list {
 
 sub update_permissions {
     my ( $self, $patron, $patron_list_id ) = @_;
+
+    my $librarian = C4::Context->userenv ? C4::Context->userenv->{'number'} : undef,
+    my $logger = Koha::Logger->get;
+    $logger->debug("BatchPermissionsModifier ( librarian: $librarian ): update permissions for list $patron_list_id based on patron " . $patron->id);
 
     my $dbh = C4::Context->dbh;
 
