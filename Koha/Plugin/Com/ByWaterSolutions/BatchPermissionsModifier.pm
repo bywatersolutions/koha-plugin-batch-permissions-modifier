@@ -131,7 +131,13 @@ sub tool_step1 {
         patron_lists     => $lists,
     );
 
-    print $cgi->header();
+    print $cgi->header(
+        {
+            -type     => 'text/html',
+            -charset  => 'UTF-8',
+            -encoding => "UTF-8"
+        }
+    );
     print $template->output();
 }
 
@@ -155,7 +161,13 @@ sub tool_step2 {
         );
     }
 
-    print $cgi->header();
+    print $cgi->header(
+        {
+            -type     => 'text/html',
+            -charset  => 'UTF-8',
+            -encoding => "UTF-8"
+        }
+    );
     print $template->output();
 }
 
