@@ -13,22 +13,6 @@ use Koha::List::Patron;
 use Koha::Logger;
 use Koha::Database;
 
-# This block allows us to load external modules stored within the plugin itself
-# In this case it's Template::Plugin::Filter::Minify::JavaScript/CSS and deps
-# cpanm --local-lib=. -f Template::Plugin::Filter::Minify::CSS from asssets dir
-BEGIN {
-    use Config;
-    use C4::Context;
-
-    my $pluginsdir = C4::Context->config('pluginsdir');
-    my $plugin_libs = '/Koha/Plugin/Com/ByWaterSolutions/BatchPermissionsModifier/lib/perl5';
-    my $local_libs = "$pluginsdir/$plugin_libs";
-
-    unshift( @INC, $local_libs );
-    unshift( @INC, "$local_libs/$Config{archname}" );
-
-}
-
 ## Here we set our plugin version
 our $VERSION = "{VERSION}";
 
