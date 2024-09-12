@@ -384,7 +384,8 @@ sub uninstall() {
 
 sub intranet_js {
     my ( $self ) = @_;
-        return "<script>".$self->retrieve_data('intranetuser_js')."</script>";
+    my $script = $self->retrieve_data('intranetuser_js');
+    return $script ? "<script>$script</script>" : q{};
 }
 
 sub update_intranetuser_js {
