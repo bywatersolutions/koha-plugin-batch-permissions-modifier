@@ -203,68 +203,6 @@ sub check_patron {
     }
 }
 
-sub check_patron_status {
-    my ( $self, $params ) = @_;
-    my $borrowernumber = $params->{borrowernumber};
-
-    my $dbh = C4::Context->dbh;
-
-    my @pairs = split(/\r?\n/, $self->retrieve_data('template_permission_mappings') );
-
-    # Check to see if patron is a template patron, if so, update the permissions
-    # of all patrons in lists mapped to that patron
-    my $is_template_patron;
-    my @patron_list_ids;
-    foreach my $pair ( @pairs ) {
-        my ( $template_borrowernumber, $patron_list_id ) = split(/:[[:blank:]]{0,1}/, $pair );
-        push( @patron_list_ids, $patron_list_id ) if ( $borrowernumber eq $template_borrowernumber );
-    }
-
-    my $data = {
-        is_template_patron => 0,
-    };
-
-    if (@patron_list_ids) {
-        $data->{is_template_patron} = 1;
-        $data->{patron_lists}       = [
-            Koha::Database->new()->schema->resultset('PatronList')->search(
-                { patron_list_id => { -in => \@patron_list_ids } },
-                { result_class => 'DBIx::Class::ResultClass::HashRefInflator' }
-            )->all
-        ];
-    }
-    else {
-
-        foreach my $pair (@pairs) {
-            my ( $template_borrowernumber, $patron_list_id ) =
-              split( /:[[:blank:]]{0,1}/, $pair );
-
-            my $count = $dbh->do(
-                "SELECT borrowernumber FROM patron_list_patrons WHERE patron_list_id = ? AND borrowernumber = ?",
-                undef,
-                ( $patron_list_id, $borrowernumber )
-            );
-
-            if ( $count eq '1' ) {
-                $data->{patron_list} =
-                  Koha::Database->new()->schema->resultset('PatronList')->find(
-                    $patron_list_id,
-                    {
-                        result_class =>
-                          'DBIx::Class::ResultClass::HashRefInflator'
-                    }
-                  );
-                $data->{template_patron} =
-                  Koha::Patrons->find($template_borrowernumber)->unblessed();
-
-                last;
-            }
-        }
-    }
-
-    return $data;
-}
-
 sub check_list {
     my ( $self, $params ) = @_;
     my $list_id = $params->{list_id};
