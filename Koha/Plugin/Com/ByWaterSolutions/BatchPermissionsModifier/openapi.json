@@ -30,6 +30,11 @@
                 }
           }
         }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "borrowers": "edit_borrowers"
+        }
       }
     }
   },
@@ -64,6 +69,11 @@
                 }
           }
         }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "borrowers": "edit_borrowers"
+        }
       }
     }
   },
@@ -97,6 +107,11 @@
                   }
                 }
           }
+        }
+      },
+      "x-koha-authorization": {
+        "permissions": {
+          "borrowers": "edit_borrowers"
         }
       }
     }
