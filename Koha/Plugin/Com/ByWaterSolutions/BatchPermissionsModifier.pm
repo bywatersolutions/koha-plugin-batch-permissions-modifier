@@ -86,7 +86,7 @@ sub api_namespace {
     return 'bpm';
 }
 
-sub tool {
+sub admin {
     my ( $self, $args ) = @_;
 
     my $cgi = $self->{'cgi'};
