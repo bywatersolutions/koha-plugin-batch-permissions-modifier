@@ -53,5 +53,15 @@ $(document).ready(function() {
         submitHandlerPatronLists();
     });
   }
+
+  if ( $('#pat_moremember').length || $('#circ_circulation').length ) {
+      $(document).on('click', 'a[onclick="addToList()"]', function() {
+        var list_id = $(this).prev('select').val();
+        if (list_id) {
+            $.get("/api/v1/contrib/bpm/patrons/" + list_id + "/check_list");
+        }
+     });
+  }
+
 });
 [% END %]
