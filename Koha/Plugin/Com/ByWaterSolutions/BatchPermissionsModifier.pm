@@ -13,6 +13,9 @@ use Koha::List::Patron;
 use Koha::Logger;
 use Koha::Database;
 
+use C4::Log qw( logaction );
+use Struct::Diff qw( diff );
+
 ## Here we set our plugin version
 our $VERSION = "{VERSION}";
 
@@ -22,7 +25,7 @@ our $metadata = {
     description     => 'A Koha plugin that adds the ability to set patron permissions in bulk.',
     date_authored   => '2018-02-26',
     date_updated    => '1900-01-01',
-    minimum_version => '16.05',
+    minimum_version => '26.05',
     maximum_version => undef,
     version         => $VERSION,
 };
@@ -233,6 +236,21 @@ sub update_permissions {
     $logger->debug("BatchPermissionsModifier ( librarian: $librarian ): update permissions for list $patron_list_id based on patron " . $patron->id);
 
     my $dbh = C4::Context->dbh;
+    
+    # before we update permissions get a snapshot of the borrowers perrmisions beofre the update
+    # this is for logaction purposes 
+    my %before;
+    if ( C4::Context->preference('BorrowersLog') ) {
+        # get the patrons from the list being used
+        my $patrons = Koha::Patrons->search(
+            { 'patron_list_patrons.patron_list_id' => $patron_list_id },
+            { join => 'patron_list_patrons' }
+        );
+        # map em to %before
+        while ( my $p = $patrons->next ) {
+            $before{ $p->borrowernumber } = $p->permissions;
+        }
+    }
 
     # Update borrowers.flags
     my $count = $dbh->do(
@@ -257,6 +275,18 @@ sub update_permissions {
         undef,
         ( $patron_list_id, $patron->id )
     );
+
+    # Log permission changes
+    if ( C4::Context->preference('BorrowersLog') ) {
+        for my $borrowernumber ( keys %before ) {
+            my $after = Koha::Patrons->find($borrowernumber)->permissions;
+            next unless keys %{ diff( $before{$borrowernumber}, $after, noU => 1 ) };
+            logaction(
+                'MEMBERS', 'MODIFY', $borrowernumber,
+                { permissions => $after }, undef, { permissions => $before{$borrowernumber} }
+            );
+        }
+    }
 
     return $count + 0;
 }

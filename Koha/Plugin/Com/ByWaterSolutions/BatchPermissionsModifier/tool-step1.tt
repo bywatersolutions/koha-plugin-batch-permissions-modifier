@@ -1,12 +1,6 @@
-[% INCLUDE 'doc-head-open.inc' %]
-  <title>Koha: Batch Permissions Modifier: Configuration</title>
-  [% INCLUDE 'doc-head-close.inc' %]
-</head>
-<body>
-[% INCLUDE 'header.inc' %]
-[% INCLUDE 'cat-search.inc' %]
-
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Batch Permissions Modifier &rsaquo; Modify permissions</div>
+[% USE Koha %]
+[% USE raw %]
+[% WRAPPER "wrapper-staff-tool-plugin.inc" method="configure" plugin_title="Koha: Batch Permissions Modifier" %]
 
 <div id="doc3">
     <h3>Koha: Batch Permissions Modifier: Modify permissions</h3>
@@ -49,7 +43,7 @@
 
         <p>
 
-        <input name="submitted" type="submit" value="Batch modify permissions" />
+        <input name="submitted" type="submit" class="btn btn-primary" value="Batch modify permissions" />
     </form>
-
-[% INCLUDE 'intranet-bottom.inc' %]
+</div>
+[% END %]

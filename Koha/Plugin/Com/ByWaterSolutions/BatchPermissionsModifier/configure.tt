@@ -1,27 +1,6 @@
-[% INCLUDE 'doc-head-open.inc' %]
-  <title>Koha: Batch Permissions Modifier: Configuration</title>
-  [% INCLUDE 'doc-head-close.inc' %]
-
-  <link rel="stylesheet" type="text/css" href="[% interface %]/[% theme %]/css/humanmsg.css" />
-  <script src="[% interface %]/lib/jquery/plugins/humanmsg.js" type="text/javascript"></script>
-
-  <script type="text/javascript">
-    $(document).ready(function() {
-      $('#save_continue').on('click', function(e){
-        e.preventDefault();
-        $.post('', $('#configureForm').serialize(), function(){
-          humanMsg.displayMsg('Settings saved!');
-        });
-      });
-    });
-  </script>
-
-</head>
-<body>
-[% INCLUDE 'header.inc' %]
-[% INCLUDE 'cat-search.inc' %]
-
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Batch Permissions Modifier &rsaquo; Configuration</div>
+[% USE Koha %]
+[% USE raw %]
+[% WRAPPER "wrapper-staff-tool-plugin.inc" method="configure" plugin_title="Koha: Batch Permissions Modifier" %]
 
 <div id="doc3">
     <h3>Koha: Batch Permissions Modifier: Configuration</h3>
@@ -51,11 +30,44 @@
         </fieldset>
 
         <p/>
-
         <input type="hidden" name="save" value="1" />
 
-        <input type="submit" value="Save" />
-        <button id="save_continue">Save & continue</button>
+        <fieldset class="action">
+            <input type="submit"  class="btn btn-primary" value="Save" />
+            <button class="btn btn-default" type="button" id="save_continue">Save & continue</button>
+        </fieldset>
     </form>
+</div>
+<script nonce="[% Koha.CSPNonce | $raw %]">
+document.addEventListener("DOMContentLoaded", function () {
+    const saveContinue = document.getElementById("save_continue");
+    const configureForm = document.getElementById("configureForm");
 
-[% INCLUDE 'intranet-bottom.inc' %]
+    if (!saveContinue || !configureForm) {
+        return;
+    }
+
+    saveContinue.addEventListener("click", function () {
+        const params = new URLSearchParams(new FormData(configureForm));
+
+        fetch(window.location.pathname + "?" + params.toString(), {
+            method: "GET"
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error(
+                    "HTTP " + response.status + " " + response.statusText
+                );
+            }
+
+            alert("Settings saved!");
+        })
+        .catch(function (error) {
+            console.error("Batch Permissions Modifier save failed:", error);
+            alert("There was a problem saving the settings.");
+        });
+    });
+});
+</script>
+
+[% END %]
